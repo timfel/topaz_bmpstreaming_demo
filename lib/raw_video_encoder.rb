@@ -31,7 +31,7 @@ class RawVideoEncoder
     pos = 0
 
     while pos < frame.pixelcount
-      @io << pixel_triple_at(frame, pos, @colors).pack("c") * skip
+      @io << pixel_triple_at(frame, pos, @colors).pack("CCC") * skip
       pos += skip
     end
   end
