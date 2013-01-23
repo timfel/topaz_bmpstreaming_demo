@@ -7,5 +7,5 @@ pushd video
 rm *.png
 rm *.bmp
 mplayer -frames 1000 -ao null -ac null -vo png "$path"
-for i in *.png; do convert $i ${i%.*}.bmp; done
+for i in *.png; do convert -flop $i ${i%.*}.bmp; done
 popd
