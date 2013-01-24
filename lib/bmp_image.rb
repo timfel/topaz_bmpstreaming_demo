@@ -67,7 +67,8 @@ class BMPImage
 
   def rgb_triple_at(pos, direction=:forward)
     rgb = direction == :reverse ? rpixel_at(pos) : pixel_at(pos)
-    rgb.unpack("CCC")
+    r,g,b = rgb[0].unpack("C"), rgb[1].unpack("C"), rgb[2].unpack("C")
+    return [r, g, b].map { |ary| ary[0] }
   end
 
   def pixelcount

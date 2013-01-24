@@ -22,7 +22,7 @@ class RawVideoEncoder
 
   def encode(quality)
     @frames.each do |frame|
-      quality_control do
+      quality_control(quality) do
         encode_frame(frame, quality)
       end
     end
