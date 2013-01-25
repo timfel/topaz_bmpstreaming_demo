@@ -58,11 +58,11 @@ class BMPImage
   private :header_read
 
   def pixel_at(pos)
-    @data[(pos * 3)...(pos * 3 + 3)]
+    @data[pos * 3, 3]
   end
 
   def rpixel_at(pos)
-    @rdata[(pos * 3)...(pos * 3 + 3)]
+    @rdata[pos * 3, 3]
   end
 
   def rgb_triple_at(pos, direction=:forward)
