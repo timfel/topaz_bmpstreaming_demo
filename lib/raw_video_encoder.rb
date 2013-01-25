@@ -36,10 +36,14 @@ class RawVideoEncoder
     skip = 1 if skip < 1
     pos = 0
 
+    buf = ""
+
     while pos < frame.pixelcount
-      @io << pixel_triple_at(frame, pos, @colors).pack("CCC") * skip
+      buf << pixel_triple_at(frame, pos, @colors).pack("CCC") * skip
       pos += skip
     end
+    @io << buf
+    @io.flush
   end
 
   def pixel_triple_at(frame, pos, colors)
