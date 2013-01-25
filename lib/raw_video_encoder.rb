@@ -1,8 +1,6 @@
 require "quality_control"
 
 class RawVideoEncoder
-  include QualityControl
-
   def initialize(path_or_io, frames, colors=:rgb)
     unless [:rgb, :yuv].include? colors
       raise "Only :yuv and :rgb are valid colors"
@@ -18,6 +16,7 @@ class RawVideoEncoder
     else
       raise "String or IO required"
     end
+    extend QualityControl
   end
 
   def encode(quality)
