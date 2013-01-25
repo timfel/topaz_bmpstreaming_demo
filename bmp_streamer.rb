@@ -3,12 +3,11 @@ require "bmp_image"
 require "raw_video_encoder"
 
 input = ARGV[0]
-output = ARGV[1]
-quality = (ARGV[2] || "50").to_i
+quality = (ARGV[1] || "50").to_i
 
-unless input and output
-  puts "$0 input_folder output_file [quality]\n"
-  puts "    output may be '-' for stdout; 0 < quality <= 100"
+unless input
+  puts "$0 input_folder [quality]\n"
+  puts "    0 < quality <= 100"
   exit
 end
 

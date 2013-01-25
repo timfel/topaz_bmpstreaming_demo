@@ -22,7 +22,7 @@ class RawVideoEncoder
 
   def encode(quality)
     @frames.each do |frame|
-      quality_control(quality) do
+      quality = quality_control(quality) do
         encode_frame(frame, quality)
       end
     end
@@ -37,11 +37,12 @@ class RawVideoEncoder
     pos = 0
 
     buf = ""
-
-    while pos < frame.pixelcount
+    while pos + skip < frame.pixelcount
       buf << pixel_triple_at(frame, pos, @colors).pack("CCC") * skip
       pos += skip
     end
+    buf << pixel_triple_at(frame, pos, @colors).pack("CCC") * (frame.pixelcount - pos)
+
     @io << buf
     @io.flush
   end
