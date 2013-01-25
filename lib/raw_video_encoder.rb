@@ -32,16 +32,27 @@ class RawVideoEncoder
     quality = 100 if quality > 100
     quality = 1 if quality < 1
 
-    skip = (frame.width / 16 * ((100 - quality).to_f / 100.0)).to_i
+    skip = (frame.height / 16 * ((100 - quality).to_f / 100.0)).to_i
     skip = 1 if skip < 1
-    pos = 0
-
+    y = 0
     buf = ""
-    while pos + skip < frame.pixelcount
-      buf << frame.rpixel_at(pos) * skip # pixel_triple_at(frame, pos, @colors).pack("CCC") * skip
-      pos += skip
+
+    while y + skip < frame.height
+      line = ""
+      x = 0
+      pos = y * frame.width
+
+      while x + skip < frame.width
+        line << pixel_triple_at(frame, pos, @colors).pack("CCC") * skip
+        x += skip
+        pos += skip
+      end
+      line << pixel_triple_at(frame, pos, @colors).pack("CCC") * (frame.width - x)
+      buf << line * skip
+      y += skip
     end
-    buf << pixel_triple_at(frame, pos, @colors).pack("CCC") * (frame.pixelcount - pos)
+    buf << line * (frame.height - y)
+
     @io << buf
   end
 
