@@ -20,14 +20,14 @@ module QualityControl
     LoadAvg.rewind
     cpuload_after = LoadAvg.read(4).gsub(".", "").to_i
 
-    begin
-      input = $stdin.read_nonblock(5)
-      if @userpreference != input.to_i
-        @userpreference = input.to_i
-        quality = @userpreference
-      end
-    rescue IO::WaitReadable
-    end
+    # begin
+    #   input = $stdin.read_nonblock(5)
+    #   if @userpreference != input.to_i
+    #     @userpreference = input.to_i
+    #     quality = @userpreference
+    #   end
+    # rescue IO::WaitReadable
+    # end
 
     quality = (quality * (FrameTime / duration)).to_i
     if cpuload_after > cpuload
