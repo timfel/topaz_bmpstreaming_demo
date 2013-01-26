@@ -51,34 +51,24 @@ module QualityControl
   end
 
   def recalculate_quality
-    # require "rubygems"; require 'ruby-debug';debugger
-    quality = @quality
-
-    # First, adjust quality based on encoding speed
-    if FrameTime > duration * 1.2 and cpuload < 80
-      # We're pretty fast, adjust quality upwards
-      quality = quality * (FrameTime / duration)
+    # Adjust quality based on encoding speed of last frame
+    if FrameTime > duration * 1.2
+      @quality = @quality * (FrameTime / duration)
     elsif FrameTime < duration * 0.9
-      # We were too slow, adjust
-      quality = quality * (FrameTime / duration)
+      @quality = @quality * (FrameTime / duration)
 
       if cpuload > 80
         # The load is pretty high, go down a bit further
-        quality -= quality * 0.09
+        @quality -= @quality * 0.09
       end
     end
 
-    # User preference is least important, and should only be
-    # considered if we can handle the load
-    if quality > user_preference
-      quality = user_preference
+    # User preference is only upper bound
+    if @quality > user_preference
+      @quality = user_preference
     end
 
-    # Try do go down gently
-    if quality < @quality - @quality.to_f / 32
-      quality = @quality - @quality.to_f / 32
-    end
-
-    quality.to_i
+    # Round to nearest int
+    @quality = @quality.to_i
   end
 end
