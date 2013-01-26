@@ -4,43 +4,81 @@ module QualityControl
   LoadAvg = File.open("/proc/loadavg", "r")
   UserPref = File.open(File.expand_path("../../quality.pref", __FILE__), "r+")
 
-  def self.included(base)
+  def self.extended(base)
     base.instance_eval do
-      @userpreference = 100
+      @user_preference = 100
       @cpuload = 0
+      @duration = FrameTime
     end
   end
 
-  def load
+  def read_cpu_load
     LoadAvg.rewind
-    cpuload = LoadAvg.read(4).gsub(".", "").to_i
+    @cpuload = LoadAvg.read(4).gsub(".", "").to_i
   end
 
-  def quality_control(quality)
-    before = quality
-
-
-
+  def read_user_preference
     input = UserPref.read
-    if @userpreference != input.to_i
-      @userpreference = input.to_i
-      quality = @userpreference
+    if input and input.size > 0
+      UserPref.truncate 0
+      @user_preference = input.to_i
     end
-    UserPref.truncate 0
+  end
 
+  def read_system_stats
+    read_cpu_load
+    read_user_preference
+  end
+
+  def cpuload
+    @cpuload
+  end
+
+  def user_preference
+    @user_preference
+  end
+
+  def duration
+    @duration
+  end
+
+  def quality_control
+    read_system_stats
     start = Time.now.to_f
     yield
+    @duration = Time.now.to_f - start
+    @quality = recalculate_quality
+  end
 
-    duration = Time.now.to_f - start
-    LoadAvg.rewind
-    cpuload_after = LoadAvg.read(4).gsub(".", "").to_i
+  def recalculate_quality
+    # require "rubygems"; require 'ruby-debug';debugger
+    quality = @quality
 
-    quality = (quality * (FrameTime / duration)).to_i
-    if cpuload_after > cpuload
-      quality -= (quality / 8)
+    # First, adjust quality based on encoding speed
+    if FrameTime * 1.5 > duration
+      # We can be twice slower, adjust quality upwards
+      quality = quality * (FrameTime / duration)
+    elsif FrameTime < duration
+      # We were too slow, adjust
+      quality = quality * (FrameTime / duration)
     end
 
-    puts "Quality changed: #{before} -> #{quality}" if quality != before
-    return quality
+    if cpuload > 80
+      # The load is pretty high, go down a bit
+      quality = quality * (cpuload - 80) / 100.0
+    end
+
+    # User preference is least important, and should only be
+    # considered if we can handle the load
+    if quality > user_preference
+      quality = user_preference
+    end
+
+    # Try do go down gently
+    if quality < @quality - @quality.to_f / 16
+      quality = @quality - @quality.to_f / 16
+    end
+
+    quality.to_i
   end
 end

@@ -16,22 +16,24 @@ class RawVideoEncoder
     else
       raise "String or IO required"
     end
+
     extend QualityControl
   end
 
   def encode(quality)
+    @quality = quality
+    @quality = 100 if @quality > 100
+    @quality = 1 if @quality < 1
+
     @frames.each do |frame|
-      quality = quality_control(quality) do
-        encode_frame(frame, quality)
+      quality_control do
+        encode_frame(frame)
       end
     end
   end
 
-  def encode_frame(frame, quality)
-    quality = 100 if quality > 100
-    quality = 1 if quality < 1
-
-    skip = (frame.height / 64 * ((100 - quality).to_f / 100.0)).to_i
+  def encode_frame(frame)
+    skip = (frame.height / 64 * ((100 - @quality).to_f / 100.0)).to_i
     skip = 1 if skip < 1
     y = 0
     buf = ""
