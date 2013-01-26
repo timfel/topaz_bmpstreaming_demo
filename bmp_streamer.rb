@@ -16,7 +16,7 @@ bmps = Dir["#{File.expand_path(input)}/*.bmp"].sort.map do |file|
 end
 raise "No bitmaps found in #{input}" if bmps.size == 0
 
-IO.popen("mplayer -demuxer rawvideo -rawvideo w=640:h=480:format=rgb24:fps=25 -", "w") do |io|
+IO.popen("mplayer -demuxer rawvideo -rawvideo w=640:h=480:format=rgb24:fps=12 -", "w") do |io|
   coder = RgbVideoEncoder.new(io, bmps)
   loop do
     coder.encode(quality)
