@@ -55,17 +55,17 @@ module QualityControl
     quality = @quality
 
     # First, adjust quality based on encoding speed
-    if FrameTime > duration * 1.5
+    if FrameTime > duration * 1.2 and cpuload < 80
       # We're pretty fast, adjust quality upwards
       quality = quality * (FrameTime / duration)
-    elsif FrameTime < duration * 1.5
+    elsif FrameTime < duration * 0.9
       # We were too slow, adjust
       quality = quality * (FrameTime / duration)
-    end
 
-    if cpuload > 80 and duration * 1.5 > FrameTime
-      # The load is pretty high and we're not that fast, go down a bit
-      quality = quality * (cpuload - 80) / 100.0
+      if cpuload > 80
+        # The load is pretty high, go down a bit further
+        quality -= quality * 0.09
+      end
     end
 
     # User preference is least important, and should only be
