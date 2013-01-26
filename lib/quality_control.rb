@@ -1,6 +1,6 @@
 module QualityControl
-  FrameRate = 25
-  FrameTime = 1.0 / 25
+  FrameRate = 12
+  FrameTime = 1.0 / FrameRate
   LoadAvg = File.open("/proc/loadavg", "r")
   UserPref = File.open(File.expand_path("../../quality.pref", __FILE__), "r+")
 
@@ -55,16 +55,16 @@ module QualityControl
     quality = @quality
 
     # First, adjust quality based on encoding speed
-    if FrameTime * 1.5 > duration
-      # We can be twice slower, adjust quality upwards
+    if FrameTime > duration * 1.5
+      # We're pretty fast, adjust quality upwards
       quality = quality * (FrameTime / duration)
-    elsif FrameTime < duration
+    elsif FrameTime < duration * 1.5
       # We were too slow, adjust
       quality = quality * (FrameTime / duration)
     end
 
-    if cpuload > 80
-      # The load is pretty high, go down a bit
+    if cpuload > 80 and duration * 1.5 > FrameTime
+      # The load is pretty high and we're not that fast, go down a bit
       quality = quality * (cpuload - 80) / 100.0
     end
 
@@ -75,8 +75,8 @@ module QualityControl
     end
 
     # Try do go down gently
-    if quality < @quality - @quality.to_f / 16
-      quality = @quality - @quality.to_f / 16
+    if quality < @quality - @quality.to_f / 32
+      quality = @quality - @quality.to_f / 32
     end
 
     quality.to_i
