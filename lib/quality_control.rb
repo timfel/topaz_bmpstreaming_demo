@@ -20,7 +20,7 @@ module QualityControl
   def read_user_preference
     input = UserPref.read
     if input and input.size > 0
-      UserPref.truncate 0
+      UserPref.seek 0, File::SEEK_SET
       @user_preference = input.to_i
     end
   end
