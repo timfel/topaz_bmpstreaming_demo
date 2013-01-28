@@ -52,8 +52,8 @@ module QualityControl
 
   def recalculate_quality
     # Adjust quality based on encoding speed of last frame
-    if FrameTime > duration * 1.2
-      @quality = @quality * (FrameTime / duration)
+    if FrameTime > duration
+      @quality = @quality * (FrameTime * 2 / duration)
     elsif FrameTime < duration * 0.9
       @quality = @quality * (FrameTime / duration)
 
