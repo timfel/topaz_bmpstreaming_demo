@@ -22,24 +22,24 @@ class BMPImage
   end
 
   def read_bitmap_offset(f)
-    size = header_read(f, 4).unpack("l<")[0]
+    size = header_read(f, 4).unpack("l")[0]
     reserved = header_read(f, 4)
-    offset = header_read(f, 4).unpack("l<")[0]
+    offset = header_read(f, 4).unpack("l")[0]
     raise "Error: No DIB header" if offset < 14 + 12 # BMPHEADER + DIBCOREHEADER
     return offset
   end
 
   def read_dimensions(f)
-    dibheadersize = header_read(f, 4).unpack("L<")[0]
+    dibheadersize = header_read(f, 4).unpack("L")[0]
     raise "Error: Broken DIB header" if dibheadersize < 12
 
-    @width = header_read(f, 4).unpack("l<")[0]
-    @height = header_read(f, 4).unpack("l<")[0]
+    @width = header_read(f, 4).unpack("l")[0]
+    @height = header_read(f, 4).unpack("l")[0]
 
     if dibheadersize >= 14
-      colorplanes = header_read(f, 2).unpack("S<")
+      colorplanes = header_read(f, 2).unpack("S")
       if dibheadersize >= 16
-        bpp = header_read(f, 2).unpack("S<")[0]
+        bpp = header_read(f, 2).unpack("S")[0]
         raise "We only support 24bit images" if bpp != 24
       end
     end
