@@ -8,3 +8,7 @@ Then do this:
 
 Quality will adjust downwards if your chosen Ruby impl can't handle streaming at around 12fps
 
+(If you do
+    jruby -J-server -J-Xmx2048m -Xcompile.invokedynamic=true bmp_streamer.rb video/
+you can nicely see when the JIT kicks in that the quality improves)
+
