@@ -1,0 +1,10 @@
+Make sure you have 'convert' and 'mplayer'
+
+Then do this:
+    ./convert.sh video/video*flv
+
+Then do this:
+    ruby bmp_streamer.rb video/
+
+Quality will adjust downwards if your chosen Ruby impl can't handle streaming at around 12fps
+
