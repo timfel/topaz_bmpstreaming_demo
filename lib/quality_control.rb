@@ -1,7 +1,6 @@
 module QualityControl
   FrameRate = 12
   FrameTime = 1.0 / FrameRate
-  LoadAvg = File.open("/proc/loadavg", "r")
   UserPref = File.open(File.expand_path("../../quality.pref", __FILE__), "r+")
 
   def self.extended(base)
@@ -10,11 +9,6 @@ module QualityControl
       @cpuload = 0
       @duration = FrameTime
     end
-  end
-
-  def read_cpu_load
-    LoadAvg.rewind
-    @cpuload = LoadAvg.read(4).gsub(".", "").to_i
   end
 
   def read_user_preference
@@ -26,12 +20,7 @@ module QualityControl
   end
 
   def read_system_stats
-    read_cpu_load
     read_user_preference
-  end
-
-  def cpuload
-    @cpuload
   end
 
   def user_preference
@@ -56,11 +45,6 @@ module QualityControl
       @quality = @quality * (FrameTime * 2 / duration)
     elsif FrameTime < duration * 0.9
       @quality = @quality * (FrameTime / duration)
-
-      if cpuload > 80
-        # The load is pretty high, go down a bit further
-        @quality -= @quality * 0.09
-      end
     end
 
     # User preference is only upper bound
